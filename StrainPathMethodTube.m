@@ -20,7 +20,7 @@ function []=StrainPathMethodTube()
 % Define the geometry of the tube
 %   the external radius, velocity of the tube are set to one
 global D_over_T
-D_over_T = 10;
+D_over_T = 40;
 
 % Generate necessary matlab functions
 disp('Generate ODE source term')
