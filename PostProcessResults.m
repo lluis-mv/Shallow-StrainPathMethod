@@ -61,9 +61,6 @@ fprintf(fid, 'Natural Coordinates: Internal \n');
 fprintf(fid, 'End GaussPoints \n');
 
 
-
-
-
 fprintf( fid, 'Result "Displacements" "StrainPathMethod" 1 Vector OnNodes \n');
 fprintf( fid, 'ComponentNames "X-Displ", "Y-Displ", "Z-Displ" \n');
 fprintf( fid, 'Values \n');

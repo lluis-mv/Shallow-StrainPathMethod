@@ -41,8 +41,8 @@ k1_pow2 =  1 - r11_pow2/ r12_pow2 ;
 
 % Matlab and Sagaseta et al (1991) use different difinitions of the
 % elliptical integrals
-%[K,E] = ellipke(k1_pow2);
 
+%[K,E] = ellipke(k1_pow2);
 [K,E ] = ApproximateKandE(k1_pow2);
 A1rK = 1/r12 / r;
 A1rE = -1/r12*(1/r - 2 * ( r-R)/r11_pow2 );
@@ -66,7 +66,7 @@ epsiDot = [epsiRdot, epsiZdot, epsiThetadot, epsiRZdot];
 
 matlabFunction(velocity, epsiDot, 'File', 'SourceTermStrainPath', 'Vars', [h, r, z]);
 
-return;
+
 %********************************************************************
 %********************************************************************
 %********** debug to check that the derivatives are correct *********
@@ -96,59 +96,33 @@ end
 %********** check that the apKnumproximation of elliptical **************
 % ***************  integrals is correct *****************************
 if ( true)
+    
     syms k_pow2 positive
     
-%     [Kanal,Eanal] = ellipke(k_pow2);
-%     
-%     for nTerms = [4:4:32]
-%         [Knum, Enum] = ApproximateKandE(k_pow2, nTerms);
-%         
-%         errorK = sqrt( (Kanal-Knum)^2);
-%         errorE = sqrt( (Eanal-Enum)^2);
-%         
-%         x = linspace(1e-6,1, 100);
-%         err1 = x;
-%         err2 = x;
-%         
-%         for i = 1:length(x)
-%             err1(i) = eval(subs( errorK, k_pow2, x(i)));
-%             err2(i) = eval(subs( errorE, k_pow2, x(i)));
-%         end
-%         figure(121)
-%         semilogy( x, err1)
-%         hold on
-%         semilogy(x, err2)
-%         hold off;
-%         pause(1)
-%     end
-%     
-    
-    % Second part
-    nTerms = 2:2:100;
     [Kanal,Eanal] = ellipke(k_pow2);
-    x = 0.98;
-    err1 = 0*nTerms;
-    err2 = 0*nTerms;
     
-    for i = 1:length(nTerms)
-        nn = nTerms(i);
+    xx = linspace(1e-6,1-1e-7, 100);
+    err1 = 0*xx;
+    err2 = 0*xx;
+    
+    
+    for i = 1:length(xx)
+        [K, E] = ApproximateKandE(xx(i));
+        err1(i) =  abs( K - eval( subs( Kanal, k_pow2, xx(i))) );
+        err2(i) =  abs( E - eval( subs( Eanal, k_pow2, xx(i))) );
         
-        [Knum, Enum] = ApproximateKandE(k_pow2, nn);
-        
-        errorK = sqrt( (Kanal-Knum)^2);
-        errorE = sqrt( (Eanal-Enum)^2);
-        
-        err1(i) = eval(subs( errorK, k_pow2, x));
-        err2(i) = eval(subs( errorE, k_pow2, x));
-        
-        figure(122)
-        loglog( nTerms, err1)
-        hold on
-        semilogy(nTerms, err2)
-        hold off;
-        drawnow
     end
+    figure(121)
+    semilogy( xx, err1)
+    hold on
+    semilogy(xx, err2)
     
+    xlabel('k')
+    ylabel('Error')
+    legend(' Elliptic K', 'Elliptic E', 'location', 'best')
+    drawnow;
+    pause(0.2)
+
     
 end
 
@@ -156,20 +130,19 @@ end
 function [K, E] = ApproximateKandE(x2, nTerms)
 % http://www.exstrom.com/math/elliptic/ellipint.html
 if (nargin == 1)
-    nTerms = 50;
+    nTerms = 75;
 end
+
 
 
 K = 0;
 for n = 0:nTerms
-    n1 = sym(n);
-    number = (factorial(2*n1)/factorial(n1)/factorial(2*n1-n1))^2 / (4^(2*n1));
-    K = K + number* x2^n; 
+    number = (factorial(2*n)/factorial(n)/factorial(2*n-n))^2 / (4^(2*n));
+    K = K + number * x2^n;
 end
 E = 1;
 for n = 1:nTerms
-    n1 = sym(n);
-    number = (factorial(2*n1)/factorial(n1)/factorial(2*n1-n1))^2 / (4^(2*n1)) / ( 2*n1-1);
+    number = (factorial(2*n)/factorial(n)/factorial(2*n-n))^2 / (4^(2*n)) / ( 2*n-1);
     E = E - number * x2^n ;
 end
 

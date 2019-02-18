@@ -66,8 +66,8 @@ end
 
 
 
-[RR, ZZ] = meshgrid([linspace(1e-6, 1, 100), ...
-    linspace(1.1, 4, 100)], linspace(1.5,-1.5,100) );
+[RR, ZZ] = meshgrid([linspace(1e-6, 1, 100), linspace(1.1, 4, 100)],  ...
+    linspace(6,-6,100) );
 % allocatate memory
 rr = 0*RR; zz = rr; disp_radial = rr; disp_vertical = rr;
 eR = 0*RR; eZ = rr; eTheta = rr; eRZ = rr;
@@ -82,10 +82,10 @@ waitBar = waitbar(0, 'Computing displacements and strains');
 for jj = 1:size(RR,2)
     for ii = 1:size(RR,1)
         R = RR(ii,jj); Z = ZZ(ii,jj);
-        tic;
+        
         [r, z, epsilon] =IntegrateDisplacements( InitialZOfTube, ...
             FinalZOfTube, R, Z);
-        toc
+        
         rr(ii,jj) = r; zz(ii,jj) = z;
         eR(ii,jj) = epsilon(1); eZ(ii,jj) = epsilon(2);
         eTheta(ii,jj) = epsilon(1); eRZ(ii,jj) = epsilon(4);
@@ -101,7 +101,6 @@ for jj = 1:size(RR,2)
     if ( jj > 3)
         PostProcessResults();
     end
-    disp(' ')
 end
 
 
