@@ -54,7 +54,7 @@ end
 
 epsilon = 1/2*( dUdX  + dUdX');
 epsilon = [epsilon, zeros(2,1);
-    zeros(1,2), U(1)/ r];
+    zeros(1,2), Ucontinuous(1)/ r];
 
 eVoigt = CompressInVoigtNotation( epsilon);
 
@@ -72,7 +72,7 @@ AlmansiTensor(2,1) = AlmansiTensor(1,2);
 
 AlmansiTensor = [AlmansiTensor, zeros(2,1);
     zeros(1,3)];
-AlmansiTensor(3,3) = U(1)/r - 1/2* ( U(1)/r)^2;
+AlmansiTensor(3,3) = Ucontinuous(1)/r - 1/2* ( Ucontinuous(1)/r)^2;
 
 aVoigt = CompressInVoigtNotation( AlmansiTensor);
 

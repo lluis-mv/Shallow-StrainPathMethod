@@ -1,15 +1,15 @@
 
-function [] = SecondPart()
+function [] = PostProcessResults()
 clear all;
 
 global D_over_T
 
+%Not the perfect way of doing it.
 load('variablesT.mat')
 
 
 minStrain = -0.05;
 maxStrain = - minStrain;
-levels = linspace(minStrain, maxStrain, 11);
 
 rr = rr(:,1:jj);
 zz = -zz(:,1:jj);
@@ -22,58 +22,7 @@ eZ = eZ(:, 1:jj);
 eRZ = eRZ(:, 1:jj);
 eR = eR(:, 1:jj);
 
-if ( false)
-    figure(1)
-    subplot(1,3,1)
-    plot(-disp_vertical, ZZ)
-    subplot(1,3,2)
-    plot(disp_radial, ZZ)
-    
-    subplot(1,3,3)
-    plot(eZ, ZZ)
-    
-    figure(2)
-    s = surf(rr, zz, eZ, 'EdgeColor', 'none', 'FaceColor', 'interp');
-    PlotTube()
-    caxis([minStrain, maxStrain]); colorbar
-    az = 0;
-    el = 90;
-    view(az, el);
-    axis equal
-    title('Vertical Strain')
-    
-    
-    figure(3)
-    contourf(rr, zz, eZ, levels, '--', 'Showtext', 'on')
-    PlotTube()
-    caxis([minStrain, maxStrain]); colorbar
-    axis equal
-    title('Vertical Strain')
-    
-    figure(7)
-    s = surf(rr, zz, eR, 'EdgeColor', 'none', 'FaceColor', 'interp');
-    PlotTube()
-    caxis([minStrain, maxStrain]); colorbar
-    az = 0;
-    el = 90;
-    view(az, el);
-    axis equal
-    title('Radial Strain')
-    
-    figure(8)
-    contourf(rr, zz, eR, levels, '--', 'Showtext', 'on')
-    PlotTube()
-    caxis([minStrain, maxStrain]); colorbar
-    axis equal
-    title('Radial Strain')
-    
-    figure(4)
-    
-    quiver(rr, zz, disp_radial, -disp_vertical)
-    PlotTube()
-    title('Displacement')
-    axis equal
-end
+
 [X, T, U] = ConvertToFEMMesh( rr, zz, disp_radial, disp_vertical);
 
 WriteToGid(X, T, U, 'Results')

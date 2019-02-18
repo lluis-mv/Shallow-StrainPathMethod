@@ -1,5 +1,5 @@
 %=========================================================================
-%  Symbolic Matlab to compute the velocities and strains Strains due to   
+%  Matlab to compute the velocities and strains Strains due to   
 %  the penetration of a tube using the Strain Path Method (Baligh, 1985)  
 %
 %  Following the approach of Sagaseta et al (1991)
@@ -15,16 +15,24 @@
 % V0: To postprocess, run the "SecondPart". It might be run during the
 % computation of the first part (in another matlab)
 
-function []=StrainPathMethodTube(hh)
+function []=StrainPathMethodTube()
 
 % Define the geometry of the tube
 %   the external radius, velocity of the tube are set to one
 global D_over_T
 D_over_T = 10;
 
-% Generate the source term
-VelocityDueToTubeV2;
-
+% Generate necessary matlab functions
+disp('Generate ODE source term')
+tic;
+SymbolicVelocityDueToTube();
+toc
+disp('++Generate ODE source term::DONE')
+disp('Generate strain files')
+tic
+SymbolicComputeStrains();
+toc
+disp('++Generate strain files::DONE')
 %********************************************************************
 %********************************************************************
 %********************** VALIDATION AREA *****************************
@@ -91,7 +99,7 @@ for jj = 1:size(RR,2)
         'disp_vertical', 'ii', 'jj', ...
         'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
     if ( jj > 3)
-        SecondPart();
+        PostProcessResults();
     end
     disp(' ')
 end
