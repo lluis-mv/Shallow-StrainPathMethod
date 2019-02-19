@@ -20,7 +20,7 @@ function []=StrainPathMethodTube()
 % Define the geometry of the tube
 %   the external radius, velocity of the tube are set to one
 global D_over_T
-D_over_T = 40;
+D_over_T = 10;
 
 % Generate necessary matlab functions
 disp('Generate ODE source term')
@@ -39,7 +39,7 @@ disp('++Generate strain files::DONE')
 %************* compare the CSL with the Closed form *****************
 if ( true)
     figure(2105)
-    zz = linspace(-20, 20, 1000);
+    zz = linspace(-20, 20, 400);
     verticalStrain = -log( 1 + 2 /D_over_T * zz/2 ...
         ./ ( 1 + 4 * ( zz/2).^2).^(3/2));
     plot( verticalStrain , zz,  'k', 'linewidth', 2)
@@ -66,11 +66,12 @@ end
 
 
 
-[RR, ZZ] = meshgrid([linspace(1e-6, 1, 100), linspace(1.1, 4, 100)],  ...
-    linspace(6,-6,100) );
+[RR, ZZ] = meshgrid([linspace(1e-6, 1, 40), linspace(1.05, 4, 60)],  ...
+    linspace(6,-6,150) );
 % allocatate memory
 rr = 0*RR; zz = rr; disp_radial = rr; disp_vertical = rr;
-eR = 0*RR; eZ = rr; eTheta = rr; eRZ = rr;
+eR = rr; eZ = rr; eTheta = rr; eRZ = rr;
+vr = rr; vz = rr;
 
 InitialZOfTube = -25;
 FinalZOfTube = 0;
@@ -89,14 +90,16 @@ for jj = 1:size(RR,2)
         rr(ii,jj) = r; zz(ii,jj) = z;
         eR(ii,jj) = epsilon(1); eZ(ii,jj) = epsilon(2);
         eTheta(ii,jj) = epsilon(1); eRZ(ii,jj) = epsilon(4);
+        [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z);
     end
     
     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
     pause(0.0001)
     disp_radial = rr - RR;
     disp_vertical = zz - ZZ;
+    
     save('variablesT.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
-        'disp_vertical', 'ii', 'jj', ...
+        'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
         'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
     if ( jj > 3)
         PostProcessResults();
@@ -105,7 +108,7 @@ end
 
 
 save('variables.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
-    'disp_vertical', 'ii', 'jj', ...
+    'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
         'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
 close(waitBar)
 
@@ -131,6 +134,12 @@ else
     error('not considered case')
 end
 
+
+function [vr, vz] = EvaluateVelocity(r, z)
+
+[a,~] = SourceTermStrainPath(0, r, z);
+vr = a(1);
+vz = a(2);
 
 function [dxdt] = AuxiliarFunction(t, x)
 r = x(1);

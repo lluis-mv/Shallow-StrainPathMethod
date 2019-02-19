@@ -21,14 +21,16 @@ eTheta = eTheta(:, 1:jj);
 eZ = eZ(:, 1:jj);
 eRZ = eRZ(:, 1:jj);
 eR = eR(:, 1:jj);
+vr = vr(:,1:jj);
+vz = -vz(:,1:jj);
 
 
-[X, T, U] = ConvertToFEMMesh( rr, zz, disp_radial, disp_vertical);
+[X, T, U, V] = ConvertToFEMMesh( rr, zz, disp_radial, disp_vertical, vr, vz);
 
-WriteToGid(X, T, U, 'Results')
+WriteToGid(X, T, U, V, 'Results');
 
 
-function [] = WriteToGid( X, T, U, XFILE)
+function [] = WriteToGid( X, T, U, V, XFILE)
 
 nNodes = size(X,1);
 nElem = size(T, 1);
@@ -66,6 +68,15 @@ fprintf( fid, 'ComponentNames "X-Displ", "Y-Displ", "Z-Displ" \n');
 fprintf( fid, 'Values \n');
 for i = 1:nNodes
     fprintf( fid, '%i %e %e %e \n', [i, U(i,:), 0] );
+end
+fprintf( fid, 'End Values \n');
+
+
+fprintf( fid, 'Result "Velocity" "StrainPathMethod" 1 Vector OnNodes \n');
+fprintf( fid, 'ComponentNames "X-Velocity", "Y-Velocity", "Z-Velocity" \n');
+fprintf( fid, 'Values \n');
+for i = 1:nNodes
+    fprintf( fid, '%i %e %e %e \n', [i, V(i,:), 0] );
 end
 fprintf( fid, 'End Values \n');
 
@@ -179,11 +190,15 @@ hold off
 
 
 
-function [X, T, U] = ConvertToFEMMesh(rr, zz, disp_radial, disp_vertical)
+function [X, T, U, V ] = ConvertToFEMMesh(rr, zz, disp_radial, ...
+    disp_vertical, vr, vz)
+
+global D_over_T
 
 nNodes = size(rr, 1)*size(rr, 2);
 X = zeros(nNodes, 2);
 U = zeros(nNodes, 2);
+V = zeros(nNodes, 2);
 
 for i = 1:size(rr,1)
     for j = 1:size(rr,2)
@@ -192,7 +207,8 @@ for i = 1:size(rr,1)
         X(nNod, 2) = zz(i,j);
         U(nNod, 1) = disp_radial(i,j);
         U(nNod, 2) = disp_vertical(i,j);
-        
+        V(nNod, 1) = vr(i,j);
+        V(nNod, 2) = vz(i,j);
     end
 end
 
@@ -204,8 +220,17 @@ for i = 1:size(rr,1)-1
         nNod2 = i +(j)*size(rr,1);
         nNod3 = i +1 +(j)*size(rr,1);
         nNod4 = i +1 +(j-1)*size(rr,1);
-        T = [T;
-            nNod1, nNod2, nNod3, nNod4];
+        xNod1 = X(nNod1, :);
+        xNod2 = X(nNod2, :);
+        xNod3 = X(nNod3, :);
+        xNod4 = X(nNod4, :);
+        meanN = 1/4*(xNod1 + xNod2 + xNod3 + xNod4);
+%         if (  (meanN(2) > 0) && ( meanN(1) < 0.99 && meanN(1) > 1-0.98*2/D_over_T) )
+%             % do nothing
+%         else
+            T = [T;
+                nNod1, nNod2, nNod3, nNod4];
+%         end
     end
 end
 
