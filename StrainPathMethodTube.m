@@ -25,12 +25,12 @@ D_over_T = 10;
 % Generate necessary matlab functions
 disp('Generate ODE source term')
 tic;
-SymbolicVelocityDueToTube();
+% SymbolicVelocityDueToTube();
 toc
 disp('++Generate ODE source term::DONE')
 disp('Generate strain files')
 tic
-SymbolicComputeStrains();
+% SymbolicComputeStrains();
 toc
 disp('++Generate strain files::DONE')
 %********************************************************************
@@ -66,8 +66,8 @@ end
 
 
 
-[RR, ZZ] = meshgrid([linspace(1e-6, 1, 40), linspace(1.05, 4, 60)],  ...
-    linspace(6,-6,150) );
+[RR, ZZ] = meshgrid([linspace(1e-6, 1, 60), linspace(1.05, 4, 60)],  ...
+    linspace(3,-3,150) );
 % allocatate memory
 rr = 0*RR; zz = rr; disp_radial = rr; disp_vertical = rr;
 eR = rr; eZ = rr; eTheta = rr; eRZ = rr;
@@ -76,11 +76,12 @@ vr = rr; vz = rr;
 InitialZOfTube = -25;
 FinalZOfTube = 0;
 
-waitBar = waitbar(0, 'Computing displacements and strains');
+% waitBar = waitbar(0, 'Computing displacements and strains');
 
 
 
 for jj = 1:size(RR,2)
+    tic
     for ii = 1:size(RR,1)
         R = RR(ii,jj); Z = ZZ(ii,jj);
         
@@ -93,24 +94,26 @@ for jj = 1:size(RR,2)
         [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z);
     end
     
-    waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
+%     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
     pause(0.0001)
     disp_radial = rr - RR;
     disp_vertical = zz - ZZ;
     
-    save('variablesT.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
+    save('StrainPath.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
         'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
         'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
     if ( jj > 3)
-        PostProcessResults();
+        PostProcessResults('StrainPath', 'StrainPath.mat');
+        disp(['PostProcess ', num2str(jj), ' of ', num2str( size(RR,2) )] )
+        toc
     end
 end
 
 
-save('variables.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
+save('StrainPath.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
     'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
         'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
-close(waitBar)
+% close(waitBar)
 
 
 function [r, z, epsilon] = IntegrateDisplacements(hIni, hEnd, R, Z)

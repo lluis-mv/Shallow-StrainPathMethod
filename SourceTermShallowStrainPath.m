@@ -77,6 +77,8 @@ vz2 = -U * w * R / pi * ( A2zE * E);
 %**************************************************************************
 % Appendix A, Equation (33) of Sagaseta et al (1991)
 [vr3, vz3] = EvaluateVelocity3( h, r, z, R, w);
+% vr3 = 0; vz3 = 0;
+
 
 
 

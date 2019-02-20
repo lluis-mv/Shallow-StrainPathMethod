@@ -1,36 +1,76 @@
 
-function [] = PostProcessResults()
-clear all;
+function [] = PostProcessResults(XFILE, matFILE)
+
+global IAmAMechanicalEngineer
+IAmAMechanicalEngineer = true;
+
+if (nargin ==  0)
+    XFILE = 'StrainPath';
+    matFILE = 'StrainPath.mat';
+end
 
 global D_over_T
 
 %Not the perfect way of doing it.
-load('variablesT.mat')
+load(matFILE)
 
 
 minStrain = -0.05;
 maxStrain = - minStrain;
 
-rr = rr(:,1:jj);
-zz = -zz(:,1:jj);
-disp_radial = disp_radial(:,1:jj);
-disp_vertical = -disp_vertical(:,1:jj);
+rr = rr(:,1:jj); zz = -zz(:,1:jj);
+disp_radial = disp_radial(:,1:jj); disp_vertical = -disp_vertical(:,1:jj);
 ZZ = -ZZ(:,1:jj);
 RR = RR(:,1:jj);
 eTheta = eTheta(:, 1:jj);
 eZ = eZ(:, 1:jj);
 eRZ = eRZ(:, 1:jj);
 eR = eR(:, 1:jj);
-vr = vr(:,1:jj);
-vz = -vz(:,1:jj);
+vr = vr(:,1:jj); vz = -vz(:,1:jj);
+FlagShallow = exist('vr1', 'var');
+
+if ( FlagShallow)
+    vr1 = vr1(:,1:jj); vz1 = -vz1(:,1:jj);
+    vr2 = vr2(:,1:jj); vz2 = -vz2(:,1:jj);
+    vr3 = vr3(:,1:jj); vz3 = -vz3(:,1:jj);
+end
+
+U = ConvertToVector(disp_radial, disp_vertical);
+[X, T] = ConvertToFEMMesh( rr, zz, U);
+V = ConvertToVector(vr, vz);
+
+if ( FlagShallow )
+    V1 = ConvertToVector(vr1, vz1);
+    V2 = ConvertToVector(vr2, vz2);
+    V3 = ConvertToVector(vr3, vz3);
+end
+
+if ( FlagShallow == false )
+    % Scale The Model
+    Rpfem = 0.0375;
+    X = X*Rpfem;
+    U = U*Rpfem;
+    V = V*Rpfem;
+    X(:,2) = X(:,2)-3*Rpfem;
+else
+    % Scale The Model
+    Rpfem = 0.0375;
+    X = X*Rpfem;
+    U = U*Rpfem;
+    V = V*Rpfem;
+    V1 = V1*Rpfem;
+    V2 = V2*Rpfem;
+    V3 = V3*Rpfem;
+end
+
+if ( FlagShallow )
+    WriteToGid(X, T, U, V, XFILE, V1, V2, V3);
+else
+    WriteToGid(X, T, U, V, XFILE);
+end
 
 
-[X, T, U, V] = ConvertToFEMMesh( rr, zz, disp_radial, disp_vertical, vr, vz);
-
-WriteToGid(X, T, U, V, 'Results');
-
-
-function [] = WriteToGid( X, T, U, V, XFILE)
+function [] = WriteToGid( X, T, U, V, XFILE, V1, V2, V3)
 
 nNodes = size(X,1);
 nElem = size(T, 1);
@@ -62,9 +102,10 @@ fprintf(fid, ' Number Of Gauss Points: 4 \n');
 fprintf(fid, 'Natural Coordinates: Internal \n');
 fprintf(fid, 'End GaussPoints \n');
 
+time = num2str(rand());
 
-fprintf( fid, 'Result "Displacements" "StrainPathMethod" 1 Vector OnNodes \n');
-fprintf( fid, 'ComponentNames "X-Displ", "Y-Displ", "Z-Displ" \n');
+fprintf( fid, ['Result "DISPLACEMENT" "Kratos" ', time,' Vector OnNodes \n']);
+fprintf( fid, 'ComponentNames "X-DISPLACEMENT", "Y-DISPLACEMENT", "Z-DISPLACEMENT" \n');
 fprintf( fid, 'Values \n');
 for i = 1:nNodes
     fprintf( fid, '%i %e %e %e \n', [i, U(i,:), 0] );
@@ -72,7 +113,7 @@ end
 fprintf( fid, 'End Values \n');
 
 
-fprintf( fid, 'Result "Velocity" "StrainPathMethod" 1 Vector OnNodes \n');
+fprintf( fid, ['Result "Velocity" "Kratos" ', time,'  Vector OnNodes \n']);
 fprintf( fid, 'ComponentNames "X-Velocity", "Y-Velocity", "Z-Velocity" \n');
 fprintf( fid, 'Values \n');
 for i = 1:nNodes
@@ -80,7 +121,31 @@ for i = 1:nNodes
 end
 fprintf( fid, 'End Values \n');
 
-fprintf(fid, 'Result "Small_strain_tensor" "StrainPathMethod" 1 Matrix OnGaussPoints "GP" \n ');
+if ( nargin == 8)
+        fprintf( fid, ['Result "Velocity1" "Kratos" ', time,'  Vector OnNodes \n']);
+    fprintf( fid, 'ComponentNames "X-Velocity1", "Y-Velocity1", "Z-Velocity1" \n');
+    fprintf( fid, 'Values \n');
+    for i = 1:nNodes
+        fprintf( fid, '%i %e %e %e \n', [i, V1(i,:), 0] );
+    end
+    fprintf( fid, 'End Values \n');
+    fprintf( fid, ['Result "Velocity2" "Kratos" ', time,'  Vector OnNodes \n']);
+    fprintf( fid, 'ComponentNames "X-Velocity2", "Y-Velocity2", "Z-Velocity2" \n');
+    fprintf( fid, 'Values \n');
+    for i = 1:nNodes
+        fprintf( fid, '%i %e %e %e \n', [i, V2(i,:), 0] );
+    end
+    fprintf( fid, 'End Values \n');
+    fprintf( fid, ['Result "Velocity3" "Kratos" ', time,'  Vector OnNodes \n']);
+    fprintf( fid, 'ComponentNames "X-Velocity3", "Y-Velocity3", "Z-Velocity3" \n');
+    fprintf( fid, 'Values \n');
+    for i = 1:nNodes
+        fprintf( fid, '%i %e %e %e \n', [i, V3(i,:), 0] );
+    end
+    fprintf( fid, 'End Values \n');
+end
+
+fprintf(fid, ['Result "Small_strain_tensor" "Kratos" ', time,'  Matrix OnGaussPoints "GP" \n ']);
 fprintf(fid, ' values \n ');
 for i = 1:nElem
     Celem = T(i,:);
@@ -94,7 +159,7 @@ fprintf(fid, ' END values \n');
 
 
 
-fprintf(fid, 'Result "Almansi_strain_tensor" "StrainPathMethod" 1 Matrix OnGaussPoints "GP" \n ');
+fprintf(fid, ['Result "ALMANSI_STRAIN_TENSOR" "Kratos" ', time,'  Matrix OnGaussPoints "GP" \n ']);
 fprintf(fid, ' values \n ');
 for i = 1:nElem
     Celem = T(i,:);
@@ -106,7 +171,7 @@ for i = 1:nElem
 end
 fprintf(fid, ' END values \n ');
 
-fprintf(fid, 'Result "difference_strain_tensor" "StrainPathMethod" 1 Matrix OnGaussPoints "GP" \n ');
+fprintf(fid, ['Result "difference_strain_tensor" "Kratos" ', time,'  Matrix OnGaussPoints "GP" \n ']);
 fprintf(fid, ' values \n ');
 for i = 1:nElem
     Celem = T(i,:);
@@ -140,30 +205,42 @@ S4 = A(:,4)';
 
 function [S1, S2, S3, S4] = ComputeAlmansi( xe, ue)
 
+global IAmAMechanicalEngineer
+sign = 1;
+
+if (IAmAMechanicalEngineer)
+    sign = - sign;
+end
 
 A = StrainsAlmansi( xe(1,1), xe(2,1), xe(3,1), xe(4,1), ...
     xe(1,2), xe(2,2), xe(3,2), xe(4,2), ...
     ue(1,1), ue(2,1), ue(3,1), ue(4,1), ...
     ue(1,2), ue(2,2), ue(3,2), ue(4,2));
 
-S1 = A(:,1)';
-S2 = A(:,2)';
-S3 = A(:,3)';
-S4 = A(:,4)';
+S1 = sign*A(:,1)';
+S2 = sign*A(:,2)';
+S3 = sign*A(:,3)';
+S4 = sign*A(:,4)';
 
 
 function [S1, S2, S3, S4] = ComputeStrains( xe, ue)
+       
+global IAmAMechanicalEngineer
+sign = 1;
 
+if (IAmAMechanicalEngineer)
+    sign = - sign;
+end
 
 A = StrainsEpsilon( xe(1,1), xe(2,1), xe(3,1), xe(4,1), ...
     xe(1,2), xe(2,2), xe(3,2), xe(4,2), ...
     ue(1,1), ue(2,1), ue(3,1), ue(4,1), ...
     ue(1,2), ue(2,2), ue(3,2), ue(4,2));
 
-S1 = A(:,1)';
-S2 = A(:,2)';
-S3 = A(:,3)';
-S4 = A(:,4)';
+S1 = sign*A(:,1)';
+S2 = sign*A(:,2)';
+S3 = sign*A(:,3)';
+S4 = sign*A(:,4)';
 
 
 function []=PlotTube()
@@ -190,25 +267,19 @@ hold off
 
 
 
-function [X, T, U, V ] = ConvertToFEMMesh(rr, zz, disp_radial, ...
-    disp_vertical, vr, vz)
+function [X, T ] = ConvertToFEMMesh(rr, zz, U)
 
 global D_over_T
 
 nNodes = size(rr, 1)*size(rr, 2);
 X = zeros(nNodes, 2);
-U = zeros(nNodes, 2);
-V = zeros(nNodes, 2);
+
 
 for i = 1:size(rr,1)
     for j = 1:size(rr,2)
-        nNod = i + (j-1)*size(rr,1);
-        X(nNod, 1) = rr(i,j);
-        X(nNod, 2) = zz(i,j);
-        U(nNod, 1) = disp_radial(i,j);
-        U(nNod, 2) = disp_vertical(i,j);
-        V(nNod, 1) = vr(i,j);
-        V(nNod, 2) = vz(i,j);
+        iNod = i + (j-1)*size(rr,1);
+        X(iNod, 1) = rr(i,j);
+        X(iNod, 2) = zz(i,j);
     end
 end
 
@@ -220,18 +291,38 @@ for i = 1:size(rr,1)-1
         nNod2 = i +(j)*size(rr,1);
         nNod3 = i +1 +(j)*size(rr,1);
         nNod4 = i +1 +(j-1)*size(rr,1);
-        xNod1 = X(nNod1, :);
-        xNod2 = X(nNod2, :);
-        xNod3 = X(nNod3, :);
-        xNod4 = X(nNod4, :);
-        meanN = 1/4*(xNod1 + xNod2 + xNod3 + xNod4);
-%         if (  (meanN(2) > 0) && ( meanN(1) < 0.99 && meanN(1) > 1-0.98*2/D_over_T) )
-%             % do nothing
-%         else
+        
+        nNod = [nNod1, nNod2, nNod3, nNod4, nNod1]';
+        
+        xNod = X(nNod, :);
+        
+        XNod =  X(nNod, :) - U(nNod,:);
+        
+        a = polyarea(xNod(:,1), xNod(:,2));
+        A = polyarea(XNod(:,1), XNod(:,2));
+        
+        ratio = abs( (A-a) / A);
+        
+        
+        if (  ratio > 0.25 )
+            % do nothing
+        else
             T = [T;
                 nNod1, nNod2, nNod3, nNod4];
-%         end
+        end
     end
 end
 
 
+function U  = ConvertToVector( u1, u2)
+
+nNodes = size(u1, 1)*size(u1, 2);
+U = zeros(nNodes, 2);
+
+for i = 1:size(u1,1)
+    for j = 1:size(u1,2)
+        nNod = i + (j-1)*size(u1,1);
+        U(nNod, 1) = u1(i,j);
+        U(nNod, 2) = u2(i,j);
+    end
+end
