@@ -24,7 +24,7 @@ global D_over_T
 D_over_T = 10;
 
 
-disp('++Generate ODE source term::DONE')
+
 disp('Generate strain files')
 tic
 SymbolicComputeStrains();
@@ -44,7 +44,7 @@ vr2 = rr; vz2 = rr; vr3 = rr; vz3 = rr;
 InitialZOfTube = 0;
 FinalZOfTube = 3;
 
-% waitBar = waitbar(0, 'Computing displacements and strains');
+
 
 
 

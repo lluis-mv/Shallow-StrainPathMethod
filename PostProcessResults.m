@@ -43,6 +43,9 @@ V = ConvertToVector(vr, vz);
 
 
 if ( ThreeExtraVelocitiesExists )
+    V1 = ConvertToVector(vr1, vz1);
+    V2 = ConvertToVector(vr2, vz2);
+    V3 = ConvertToVector(vr3, vz3);
     WriteToGid(X, T, U, V, XFILE, V1, V2, V3);
 else
     WriteToGid(X, T, U, V, XFILE);
