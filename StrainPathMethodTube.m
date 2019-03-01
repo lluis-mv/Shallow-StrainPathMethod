@@ -1,13 +1,13 @@
 %=========================================================================
-%  Matlab to compute the velocities and strains Strains due to   
-%  the penetration of a tube using the Strain Path Method (Baligh, 1985)  
+%  Matlab to compute the velocities and strains Strains due to
+%  the penetration of a tube using the Strain Path Method (Baligh, 1985)
 %
 %  Following the approach of Sagaseta et al (1991)
 %
 %  This file is responsible of the numerical integration whereas the other
 %  file defines the velocity and temporal derivative of strains
-%  simbolically and write them into a file 
-%  
+%  simbolically and write them into a file
+%
 %
 %  Barcelona, 13 February 2019
 %=========================================================================
@@ -25,14 +25,16 @@ D_over_T = 10;
 % Generate necessary matlab functions
 disp('Generate ODE source term')
 tic;
-% SymbolicVelocityDueToTube();
+SymbolicVelocityDueToTube();
 toc
 disp('++Generate ODE source term::DONE')
 disp('Generate strain files')
 tic
-% SymbolicComputeStrains();
+SymbolicComputeStrains();
 toc
 disp('++Generate strain files::DONE')
+
+
 %********************************************************************
 %********************************************************************
 %********************** VALIDATION AREA *****************************
@@ -58,7 +60,7 @@ if ( true)
     drawnow;
     xlabel('Vertical deformation, $\epsilon_z$', 'interpreter', 'latex')
     ylabel('normalized soil position, $z/R$', 'interpreter', 'latex')
-
+    
 end
 %****************************************************************
 %****************************************************************
@@ -76,7 +78,6 @@ vr = rr; vz = rr;
 InitialZOfTube = -25;
 FinalZOfTube = 0;
 
-% waitBar = waitbar(0, 'Computing displacements and strains');
 
 
 
@@ -85,7 +86,7 @@ for jj = 1:size(RR,2)
     for ii = 1:size(RR,1)
         R = RR(ii,jj); Z = ZZ(ii,jj);
         
-        [r, z, epsilon] =IntegrateDisplacements( InitialZOfTube, ...
+        [r, z, epsilon] = IntegrateDisplacements( InitialZOfTube, ...
             FinalZOfTube, R, Z);
         
         rr(ii,jj) = r; zz(ii,jj) = z;
@@ -94,7 +95,6 @@ for jj = 1:size(RR,2)
         [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z);
     end
     
-%     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
     pause(0.0001)
     disp_radial = rr - RR;
     disp_vertical = zz - ZZ;
@@ -112,8 +112,8 @@ end
 
 save('StrainPath.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
     'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
-        'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
-% close(waitBar)
+    'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
+
 
 
 function [r, z, epsilon] = IntegrateDisplacements(hIni, hEnd, R, Z)
@@ -128,7 +128,7 @@ SourceFunction = @(t,x) AuxiliarFunction(t,x);
 
 if (nargout == 3)
     r = xx(end,1);
-    z = xx(end,2); 
+    z = xx(end,2);
     epsilon = xx(end, 3:6);
 elseif (nargout == 2)
     r = t;

@@ -134,7 +134,6 @@ if (nargin == 1)
 end
 
 
-
 K = 0;
 for n = 0:nTerms
     number = (factorial(2*n)/factorial(n)/factorial(2*n-n))^2 / (4^(2*n));

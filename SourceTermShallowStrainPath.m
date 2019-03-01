@@ -1,7 +1,7 @@
 %=========================================================================
-%  Symbolic Matlab to compute the velocities and strains Strains due to
-%  the penetration of a tube using the Strain Path Method (Baligh, 1985)
-%
+%  Matlab to compute the velocities and strains Strains due to the shallow
+%  the penetration of a tube using the Shallow Strain Path method (Sagaseta
+%  et al, 1981)
 %
 %  Following the approach of Sagaseta et al (1991)
 %
@@ -112,7 +112,7 @@ kh_pow2 = 1 - rh1_pow2./rh2_pow2;
 [K,E ] = ApproximateKandE(kh_pow2);
 
 AhK = - h./(rh1_pow2.*rh2) .* ( 1-kh_pow2)./kh_pow2 .* ...
-        (  (a-R)./rh1_pow2 - (a+R)./rh2_pow2);
+    (  (a-R)./rh1_pow2 - (a+R)./rh2_pow2);
 
 AhE = 2*(a-R)./rh1_pow2   + (a+R)./rh2_pow2 + ( 1-kh_pow2)./kh_pow2 .* ...
     ( (a-R)./rh1_pow2 - (a+R)./rh2_pow2);

@@ -1,6 +1,7 @@
 
 function [] = PostProcessResults(XFILE, matFILE)
 
+%Changes the sign of strains (to Solid Mechanics)
 global IAmAMechanicalEngineer
 IAmAMechanicalEngineer = true;
 
@@ -9,7 +10,6 @@ if (nargin ==  0)
     matFILE = 'StrainPath.mat';
 end
 
-global D_over_T
 
 %Not the perfect way of doing it.
 load(matFILE)
@@ -27,9 +27,10 @@ eZ = eZ(:, 1:jj);
 eRZ = eRZ(:, 1:jj);
 eR = eR(:, 1:jj);
 vr = vr(:,1:jj); vz = -vz(:,1:jj);
-FlagShallow = exist('vr1', 'var');
 
-if ( FlagShallow)
+ThreeExtraVelocitiesExists = exist('vr1', 'var');
+
+if ( ThreeExtraVelocitiesExists)
     vr1 = vr1(:,1:jj); vz1 = -vz1(:,1:jj);
     vr2 = vr2(:,1:jj); vz2 = -vz2(:,1:jj);
     vr3 = vr3(:,1:jj); vz3 = -vz3(:,1:jj);
@@ -39,31 +40,9 @@ U = ConvertToVector(disp_radial, disp_vertical);
 [X, T] = ConvertToFEMMesh( rr, zz, U);
 V = ConvertToVector(vr, vz);
 
-if ( FlagShallow )
-    V1 = ConvertToVector(vr1, vz1);
-    V2 = ConvertToVector(vr2, vz2);
-    V3 = ConvertToVector(vr3, vz3);
-end
 
-if ( FlagShallow == false )
-    % Scale The Model
-    Rpfem = 0.0375;
-    X = X*Rpfem;
-    U = U*Rpfem;
-    V = V*Rpfem;
-    X(:,2) = X(:,2)-3*Rpfem;
-else
-    % Scale The Model
-    Rpfem = 0.0375;
-    X = X*Rpfem;
-    U = U*Rpfem;
-    V = V*Rpfem;
-    V1 = V1*Rpfem;
-    V2 = V2*Rpfem;
-    V3 = V3*Rpfem;
-end
 
-if ( FlagShallow )
+if ( ThreeExtraVelocitiesExists )
     WriteToGid(X, T, U, V, XFILE, V1, V2, V3);
 else
     WriteToGid(X, T, U, V, XFILE);
@@ -122,7 +101,7 @@ end
 fprintf( fid, 'End Values \n');
 
 if ( nargin == 8)
-        fprintf( fid, ['Result "Velocity1" "Kratos" ', time,'  Vector OnNodes \n']);
+    fprintf( fid, ['Result "Velocity1" "Kratos" ', time,'  Vector OnNodes \n']);
     fprintf( fid, 'ComponentNames "X-Velocity1", "Y-Velocity1", "Z-Velocity1" \n');
     fprintf( fid, 'Values \n');
     for i = 1:nNodes
@@ -224,7 +203,7 @@ S4 = sign*A(:,4)';
 
 
 function [S1, S2, S3, S4] = ComputeStrains( xe, ue)
-       
+
 global IAmAMechanicalEngineer
 sign = 1;
 
@@ -243,33 +222,8 @@ S3 = sign*A(:,3)';
 S4 = sign*A(:,4)';
 
 
-function []=PlotTube()
-global D_over_T
-D = 2;
-t = D/D_over_T;
-hold on
-x = [1, 1-t, 1-t, 1];
-y = [0, 0 , 4, 4];
-z = 100*[1,1,1,1];
-patch(x,y,z, 'k')
-
-
-x=[]; y=[]; z=[];
-
-for i = 1:100
-    a = i/100*2*pi;
-    x = [x, (1-t/2)+t/2*sin(a)];
-    y = [y, t/2*cos(a)];
-    z = [100, z];
-end
-patch(x,y,z,'k')
-hold off
-
-
-
 function [X, T ] = ConvertToFEMMesh(rr, zz, U)
 
-global D_over_T
 
 nNodes = size(rr, 1)*size(rr, 2);
 X = zeros(nNodes, 2);

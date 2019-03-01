@@ -1,13 +1,13 @@
 %=========================================================================
-%  Matlab to compute the velocities and strains Strains due to   
-%  the penetration of a tube using the Strain Path Method (Baligh, 1985)  
+%  Matlab to compute the velocities and strains Strains due to
+%  the penetration of a tube using the Strain Path Method (Baligh, 1985)
 %
 %  Following the approach of Sagaseta et al (1991)
 %
 %  This file is responsible of the numerical integration whereas the other
 %  file defines the velocity and temporal derivative of strains
-%  simbolically and write them into a file 
-%  
+%  simbolically and write them into a file
+%
 %  Shallow strain path method!
 %
 %  Barcelona, 13 February 2019
@@ -27,7 +27,7 @@ D_over_T = 10;
 disp('++Generate ODE source term::DONE')
 disp('Generate strain files')
 tic
-% SymbolicComputeStrains();
+SymbolicComputeStrains();
 toc
 disp('++Generate strain files::DONE')
 
@@ -56,14 +56,14 @@ for jj = 1:size(RR,2)
         [r, z] =IntegrateDisplacements( InitialZOfTube, ...
             FinalZOfTube, R, Z);
         
-        rr(ii,jj) = r; 
+        rr(ii,jj) = r;
         zz(ii,jj) = z;
         [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z, FinalZOfTube);
         [vr(ii,jj), vz(ii,jj), vr1(ii,jj), vz1(ii,jj), vr2(ii,jj), vz2(ii,jj), ...
             vr3(ii,jj), vz3(ii,jj) ] = EvaluateVelocity(r, z, FinalZOfTube);
     end
     
-%     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
+    %     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
     pause(0.0001)
     disp_radial = rr - RR;
     disp_vertical = zz - ZZ;
@@ -83,8 +83,8 @@ end
 save('Shallow.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
     'disp_vertical', 'ii', 'jj', 'vr', 'vz', ...
     'vr1', 'vz1', 'vr2', 'vz2', 'vr3', 'vz3', ...
-        'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
-% close(waitBar)
+    'eR', 'eZ', 'eTheta', 'eRZ', 'D_over_T')
+
 
 
 function [r, z] = IntegrateDisplacements(hIni, hEnd, R, Z)
@@ -95,12 +95,12 @@ initialCondition(2) = Z;
 
 SourceFunction = @(t,x) AuxiliarFunction(t,x);
 options = odeset('RelTol',1e-6, 'AbsTol', 1e-6);
-[t, xx] = ode45( SourceFunction , [hIni, hEnd], initialCondition, options);
+[~, xx] = ode45( SourceFunction , [hIni, hEnd], initialCondition, options);
 
 
 r = xx(end,1);
 z = xx(end,2);
-    
+
 
 
 function [vr, vz, vr1, vz1, vr2, vz2, vr3, vz3] = EvaluateVelocity(r, z, FinalZofTube)
