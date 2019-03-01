@@ -1,11 +1,7 @@
-aResults.msh  
-Results.msh
 SourceTermStrainPath.m
 StrainsAlmansi.m     
 StrainsEpsilon.m           
-variables.mat                                                 
-aResults.res  
-Results.res  
 StrainsDifference.m  
-variablesT.mat
-
+*.mat
+*.msh
+*.res
