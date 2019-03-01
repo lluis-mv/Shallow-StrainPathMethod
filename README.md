@@ -7,4 +7,4 @@ Both codes follow the approach proposed by Sagaseta et al (1991): the tube moves
 
 Elliptical integrals are computed according to Hollos (2012) [http://www.exstrom.com/math/elliptic/ellipint.html] since it is by far more eficient than using the Matlab build-in elliptical integrals.
 
-Data postprocessing is done in GiD
+Data postprocessing is done in GiD.
