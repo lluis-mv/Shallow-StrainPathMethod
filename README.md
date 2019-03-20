@@ -1,4 +1,8 @@
  ## StrainPathMethod
+ 
+[license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
+[license]: https://github.com/lluis-mv/Shallow-StrainPathMethod/blob/master/license.txt
+ 
 Matlab/Octave code to compute displacements, velocities and strains due to the penetration of a tube using the Strain Path Method (Baligh, 1985).
 
 The Shallow Strain Path Method (Sagaseta et al, 1991) is also included.
@@ -29,9 +33,8 @@ It might be necessary to install sympy. In a terminal, enter the following line:
 
 ## License and citation
 
-This code is distributed under GNU General Public License v3.0.
+This code is distributed under BSD 3-Clause License. 
 
-- Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.
 
 If you find it useful for your work, please cite as follows:
 - Monforte, .... (2019) doi...
