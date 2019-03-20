@@ -1,7 +1,5 @@
- ## StrainPathMethod
+ ## Shallow-StrainPathMethod
  
-[license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
-[license]: https://github.com/lluis-mv/Shallow-StrainPathMethod/blob/master/license.txt
  
 Matlab/Octave code to compute displacements, velocities and strains due to the penetration of a tube using the Strain Path Method (Baligh, 1985).
 
