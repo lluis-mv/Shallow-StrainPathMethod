@@ -13,7 +13,7 @@ Data postprocessing is done in GiD.
 
 ### Octave compatibility with symbolic generation
 
-(The code is fully compatible with Octave. However, the symbolic generation of files is slow and probably should be changed)
+The code is fully compatible with Octave. However, the symbolic generation of these files is slow and probably should be changed. 
 
 The symbolic toolbox of octave might be installed (in Linux) by typping in the octave command window:
 
