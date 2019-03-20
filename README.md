@@ -1,5 +1,5 @@
-# StrainPathMethod
-Matlab to compute displacements, velocities and strains due to the penetration of a tube using the Strain Path Method (Baligh, 1985).
+ ## StrainPathMethod
+Matlab/Octave code to compute displacements, velocities and strains due to the penetration of a tube using the Strain Path Method (Baligh, 1985).
 
 The Shallow Strain Path Method (Sagaseta et al, 1991) is also included.
 
@@ -9,17 +9,20 @@ Elliptical integrals are computed according to Hollos (2012) [http://www.exstrom
 
 Data postprocessing is done in GiD.
 
+
+
+### Octave compatibility with symbolic generation
+
 (The code is fully compatible with Octave. However, the symbolic generation of files is slow and probably should be changed)
 
-# Octave compatibility with symbolic generation
-The symbolic toolbox of octave might be installed (in Linux) with:
+The symbolic toolbox of octave might be installed (in Linux) by typping in the octave command window:
 
-    pkg install -forge symbolic
+> pkg install -forge symbolic
 
 and loaded with:
    
-    pkg load symbolic
+> pkg load symbolic
 
-It might be necessary to install sympy:
+It might be necessary to install sympy. In a terminal, enter the following line:
 
-    sudo apt-get install python-sympy
+> sudo apt-get install python-sympy
