@@ -37,5 +37,5 @@ It might be necessary to install sympy. In a terminal, enter the following line:
 This code is distributed under BSD 3-Clause License. 
 
 
-If you find it useful for your work, please cite as follows:
+If you find these codes useful for your work, please cite as follows:
 - Monforte, .... (2019) doi...
