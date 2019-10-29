@@ -6,7 +6,7 @@
  
 Matlab/Octave code to compute displacements, velocities and strains due to the penetration of a tube using the Strain Path Method ([Baligh, 1985](http://doi.org/10.1061/(ASCE)0733-9410(1985)111:9(1108))).
 
-The Shallow Strain Path Method ([Sagaseta et al, 1991](http://doi.org/10.1002/(SICI)1096-9853(199710)21:10<687::AID-NAG897>3.0.CO;2-3)) is also included.
+The Shallow Strain Path Method ([Sagaseta et al, 1991](http://doi.org/10.1002/(SICI)1096-9853(199710)21:10<687::AID-NAG897>3.0.CO;2-3)) is also considered.
 
 Both codes follow the approach proposed by [Sagaseta et al (1991)](http://doi.org/10.1002/(SICI)1096-9853(199710)21:10<687::AID-NAG897>3.0.CO;2-3): the tube moves from the far field to the center of the domain.
 
