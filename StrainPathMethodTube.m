@@ -12,8 +12,6 @@
 %  Barcelona, 13 February 2019
 %=========================================================================
 
-% V0: To postprocess, run the "SecondPart". It might be run during the
-% computation of the first part (in another matlab)
 
 function []=StrainPathMethodTube()
 
@@ -24,7 +22,7 @@ D_over_T = 10;
 
 % Generate necessary matlab functions
 disp('Generate ODE source term')
-disp('It may take several minutes, but... you may comment it')
+disp('It may take several minutes, but it should be run for every D/t')
 tic;
 %SymbolicVelocityDueToTube(D_over_T);
 toc

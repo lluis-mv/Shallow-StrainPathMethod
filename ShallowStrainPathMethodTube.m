@@ -13,8 +13,7 @@
 %  Barcelona, 13 February 2019
 %=========================================================================
 
-% V0: To postprocess, run the "SecondPart". It might be run during the
-% computation of the first part (in another matlab)
+
 
 function []=ShallowStrainPathMethodTube()
 
