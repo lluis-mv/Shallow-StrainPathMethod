@@ -8,13 +8,10 @@
 %  Barcelona, 13 February 2019
 %=========================================================================
 
-function [velocity, v1, v2, v3]=SourceTermShallowStrainPath(h, r, z)
+function [velocity, v1, v2, v3]=SourceTermShallowStrainPath(h, r, z, D_over_T)
 
 % 1- Define the geometry of the tube
-global D_over_T;
-if ( size(D_over_T, 1) == 0)
-    D_over_T = 40;
-end
+
 
 if ( nargin == 0)
     h = 0.1;

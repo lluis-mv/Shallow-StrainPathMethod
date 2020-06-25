@@ -20,16 +20,9 @@ function []=ShallowStrainPathMethodTube()
 
 % Define the geometry of the tube
 %   the external radius, velocity of the tube are set to one
-global D_over_T
+
+
 D_over_T = 10;
-
-
-
-disp('Generate strain files')
-tic
-SymbolicComputeStrains();
-toc
-disp('++Generate strain files::DONE')
 
 
 
@@ -54,13 +47,13 @@ for jj = 1:size(RR,2)
         R = RR(ii,jj); Z = ZZ(ii,jj);
         
         [r, z] =IntegrateDisplacements( InitialZOfTube, ...
-            FinalZOfTube, R, Z);
+            FinalZOfTube, R, Z, D_over_T);
         
         rr(ii,jj) = r;
         zz(ii,jj) = z;
-        [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z, FinalZOfTube);
+        [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z, FinalZOfTube, D_over_T);
         [vr(ii,jj), vz(ii,jj), vr1(ii,jj), vz1(ii,jj), vr2(ii,jj), vz2(ii,jj), ...
-            vr3(ii,jj), vz3(ii,jj) ] = EvaluateVelocity(r, z, FinalZOfTube);
+            vr3(ii,jj), vz3(ii,jj) ] = EvaluateVelocity(r, z, FinalZOfTube, D_over_T);
     end
     
     %     waitbar(jj/size(RR,2),waitBar, 'Computing displacements and strains');
@@ -87,13 +80,13 @@ save('Shallow.mat', 'rr','RR','zz','ZZ', 'disp_radial', ...
 
 
 
-function [r, z] = IntegrateDisplacements(hIni, hEnd, R, Z)
+function [r, z] = IntegrateDisplacements(hIni, hEnd, R, Z, D_over_T)
 
 initialCondition = zeros(2,1);
 initialCondition(1) = R;
 initialCondition(2) = Z;
 
-SourceFunction = @(t,x) AuxiliarFunction(t,x);
+SourceFunction = @(t,x) AuxiliarFunction(t, x, D_over_T);
 options = odeset('RelTol',1e-6, 'AbsTol', 1e-6);
 [~, xx] = ode45( SourceFunction , [hIni, hEnd], initialCondition, options);
 
@@ -103,22 +96,22 @@ z = xx(end,2);
 
 
 
-function [vr, vz, vr1, vz1, vr2, vz2, vr3, vz3] = EvaluateVelocity(r, z, FinalZofTube)
+function [vr, vz, vr1, vz1, vr2, vz2, vr3, vz3] = EvaluateVelocity(r, z, FinalZofTube, D_over_T)
 if (nargout == 2)
-    [a] = SourceTermShallowStrainPath(FinalZofTube, r, z);
+    [a] = SourceTermShallowStrainPath(FinalZofTube, r, z, D_over_T);
     vr = a(1);
     vz = a(2);
 elseif (nargout == 8)
-    [a, b, c, d] = SourceTermShallowStrainPath(FinalZofTube, r, z);
+    [a, b, c, d] = SourceTermShallowStrainPath(FinalZofTube, r, z, D_over_T);
     vr = a(1); vz = a(2);
     vr1 = b(1); vz1 = b(2);
     vr2 = c(1); vz2 = c(2);
     vr3 = d(1); vz3 = d(2);
 end
 
-function [dxdt] = AuxiliarFunction(t, x)
+function [dxdt] = AuxiliarFunction(t, x, D_over_T)
 r = x(1);
 z = x(2);
-[v] = SourceTermShallowStrainPath(t,r,z);
+[v] = SourceTermShallowStrainPath(t,r,z, D_over_T);
 
 dxdt = v;
