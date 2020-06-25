@@ -8,11 +8,10 @@
 %  Barcelona, 13 February 2019
 %=========================================================================
 
-function []=SymbolicVelocityDueToTube()
+function []=SymbolicVelocityDueToTube(D_over_T)
 
 % 1- Define the geometry of the tube
-global D_over_T;
-if ( size(D_over_T, 1) == 0)
+if (nargin == 0)
     D_over_T = 40;
 end
 
