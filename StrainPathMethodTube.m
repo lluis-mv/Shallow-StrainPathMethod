@@ -19,20 +19,16 @@ function []=StrainPathMethodTube()
 
 % Define the geometry of the tube
 %   the external radius, velocity of the tube are set to one
-global D_over_T
+
 D_over_T = 10;
 
 % Generate necessary matlab functions
 disp('Generate ODE source term')
+disp('It may take several minutes, but... you may comment it')
 tic;
-SymbolicVelocityDueToTube();
+%SymbolicVelocityDueToTube(D_over_T);
 toc
 disp('++Generate ODE source term::DONE')
-disp('Generate strain files')
-tic
-SymbolicComputeStrains();
-toc
-disp('++Generate strain files::DONE')
 
 
 %********************************************************************
@@ -69,14 +65,14 @@ end
 
 
 [RR, ZZ] = meshgrid([linspace(1e-6, 1, 60), linspace(1.05, 4, 60)],  ...
-    linspace(3,-3,150) );
+    linspace(6,-3,150) );
 % allocatate memory
 rr = 0*RR; zz = rr; disp_radial = rr; disp_vertical = rr;
 eR = rr; eZ = rr; eTheta = rr; eRZ = rr;
 vr = rr; vz = rr;
 
 InitialZOfTube = -25;
-FinalZOfTube = 0;
+FinalZOfTube = 3;
 
 
 
@@ -92,7 +88,7 @@ for jj = 1:size(RR,2)
         rr(ii,jj) = r; zz(ii,jj) = z;
         eR(ii,jj) = epsilon(1); eZ(ii,jj) = epsilon(2);
         eTheta(ii,jj) = epsilon(1); eRZ(ii,jj) = epsilon(4);
-        [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z);
+        [vr(ii,jj), vz(ii,jj)] = EvaluateVelocity(r, z, FinalZOfTube);
     end
     
     pause(0.0001)
@@ -138,9 +134,9 @@ else
 end
 
 
-function [vr, vz] = EvaluateVelocity(r, z)
+function [vr, vz] = EvaluateVelocity(r, z, FinalZ)
 
-[a,~] = SourceTermStrainPath(0, r, z);
+[a,~] = SourceTermStrainPath(FinalZ, r, z);
 vr = a(1);
 vz = a(2);
 
