@@ -38,4 +38,4 @@ This code is distributed under BSD 3-Clause License.
 
 
 If you find these codes useful for your work, please cite as follows:
-- Monforte, .... (2019) doi...
+- Monforte, L., Arroyo, M., Carbonell, J.M. & Gens, A (2020) Large strain analysis of undrained smooth tube samplig. Géotechnique. (Accepted)
