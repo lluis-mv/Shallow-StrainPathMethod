@@ -1,7 +1,3 @@
-SourceTermStrainPath.m
-StrainsAlmansi.m     
-StrainsEpsilon.m           
-StrainsDifference.m  
 *.mat
 *.msh
 *.res
