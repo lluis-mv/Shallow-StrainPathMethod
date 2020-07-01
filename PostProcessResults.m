@@ -168,9 +168,9 @@ fprintf(fid, ' END values \n ');
 
 fclose(fid);
 
-system(['mv a', XFILE, '.res ',  XFILE, '.res ']);
-system(['mv a', XFILE, '.msh ',  XFILE, '.msh ']);
-
+%system(['mv a', XFILE, '.res ',  XFILE, '.res ']);
+movefile(['a', XFILE, '.msh '],  [XFILE, '.msh ']);
+movefile(['a', XFILE, '.res '],  [XFILE, '.res ']);
 function [S1, S2, S3, S4] = ComputeDifference( xe, ue)
 
 
