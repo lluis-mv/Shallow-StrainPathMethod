@@ -41,6 +41,4 @@ If you find these codes useful for your work, please cite as follows:
 - Monforte, L., Arroyo, M., Carbonell, J.M. & Gens, A (2021) Large strain analysis of undrained smooth tube samplig. Géotechnique. [https://doi.org/10.1680/jgeot.19.p.354](https://doi.org/10.1680/jgeot.19.p.354)
 
 
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/g23QfirxJ6A)
-
 
